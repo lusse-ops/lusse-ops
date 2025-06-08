@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arch Angels Education Centre</title>
+    <!-- Tailwind CSS CDN for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter for a clean, professional look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for font and any specific overrides */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background-color: #f8f8f8; /* Light background */
+        }
+        /* Custom CSS variables for colors */
+        :root {
+            --color-darkred: #00258b;
+            --color-darkblue: #00008B;
+        }
+
+        /* Style for the simple modal */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            display: flex; /* Use flexbox to center content */
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 30px;
+            border-radius: 12px; /* Rounded corners for the modal */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 90%;
+            width: 400px;
+            text-align: center;
+            position: relative; /* Needed for close button positioning */
+        }
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Keyframes for subtle 3D floating animation */
+        @keyframes float3D {
+            0% {
+                transform: translateZ(0) scale(1) rotateX(0deg) rotateY(0deg);
+                opacity: 0.15;
+            }
+            25% {
+                transform: translateZ(10px) scale(1.02) rotateX(2deg) rotateY(1deg);
+                opacity: 0.2;
+            }
+            50% {
+                transform: translateZ(0) scale(1) rotateX(0deg) rotateY(0deg);
+                opacity: 0.15;
+            }
+            75% {
+                transform: translateZ(-10px) scale(0.98) rotateX(-2deg) rotateY(-1deg);
+                opacity: 0.1;
+            }
+            100% {
+                transform: translateZ(0) scale(1) rotateX(0deg) rotateY(0deg);
+                opacity: 0.15;
+            }
+        }
+
+        /* Apply the 3D floating animation to the background */
+        .hero-background-image {
+            background-image: url('black.jpg'); /* New background image */
+            background-size: cover; /* Cover the entire area */
+            background-position: center center; /* Center the image */
+            background-repeat: no-repeat; /* Don't repeat */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            animation: float3D 25s ease-in-out infinite alternate; /* Apply floating 3D animation */
+            opacity: 0.15; /* Subtle opacity for background */
+            transform-origin: center center; /* Ensure transformations are from center */
+        }
+
+        /* Keyframes for subtle bounce effect on elements */
+        @keyframes bounceIn {
+            0%, 20%, 40%, 60%, 80%, 100% {
+                transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+            }
+            0% {
+                opacity: 0;
+                transform: scale3d(0.3, 0.3, 0.3);
+            }
+            20% {
+                transform: scale3d(1.1, 1.1, 1.1);
+            }
+            40% {
+                transform: scale3d(0.9, 0.9, 0.9);
+            }
+            60% {
+                opacity: 1;
+                transform: scale3d(1.03, 1.03, 1.03);
+            }
+            80% {
+                transform: scale3d(0.97, 0.97, 0.97);
+            }
+            100% {
+                opacity: 1;
+                transform: scale3d(1, 1, 1);
+            }
+        }
+        .animate-bounce-in {
+            animation: bounceIn 1s ease-in-out forwards;
+        }
+
+        /* Fade in up animation for content */
+        @keyframes fadeInMoveUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-fade-in-up {
+            animation: fadeInMoveUp 0.8s ease-out forwards;
+        }
+        /* Delay for cascading animations */
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .delay-500 { animation-delay: 0.5s; }
+        .delay-600 { animation-delay: 0.6s; }
+        .delay-700 { animation-delay: 0.7s; }
+        .delay-800 { animation-delay: 0.8s; }
+
+        /* Tailwind custom colors for the new palette */
+        .bg-darkred { background-color: var(--color-darkred); }
+        .text-darkred { color: var(--color-darkred); }
+        .bg-darkblue { background-color: var(--color-darkblue); }
+        .text-darkblue { color: var(--color-darkblue); }
+
+        /* Styles for the mobile/dropdown menu */
+        /* Hide the regular navigation on small screens */
+        .desktop-nav {
+            display: none;
+        }
+        /* Show hamburger icon on small screens */
+        .hamburger-menu {
+            display: block; /* Shown by default on mobile */
+            cursor: pointer;
+            z-index: 1001; /* Ensure it's above other content */
+            position: absolute; /* Position relative to header */
+            left: 1rem; /* Left edge of header */
+            top: 50%; /* Center vertically */
+            transform: translateY(-50%); /* Adjust for perfect centering */
+            padding: 0.5rem; /* Add some padding for easier tapping */
+        }
+        .hamburger-menu span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: white;
+            margin: 5px 0;
+            transition: 0.4s;
+            border-radius: 2px;
+        }
+
+        /* Styles for the dropdown menu */
+        .dropdown-menu {
+            position: fixed;
+            top: 0;
+            left: -100%; /* Start off-screen to the left */
+            width: 250px; /* Width of the dropdown */
+            height: 100%;
+            background-color: var(--color-darkred); /* Match header background */
+            padding-top: 5rem; /* Space for the close button at the top */
+            transition: left 0.3s ease-in-out; /* Smooth slide-in/out */
+            z-index: 999; /* Below modal, above content */
+            box-shadow: 2px 0 10px rgba(0,0,0,0.3); /* Subtle shadow */
+            display: flex; /* Use flexbox for vertical list */
+            flex-direction: column;
+            align-items: flex-start; /* Align links to the left */
+        }
+        .dropdown-menu.active {
+            left: 0; /* Slide into view */
+        }
+        .dropdown-menu a {
+            color: white;
+            padding: 0.75rem 1.5rem; /* Padding for each link */
+            display: block;
+            width: 100%;
+            text-align: left;
+            transition: background-color 0.2s;
+            border-bottom: 1px solid rgba(255,255,255,0.1); /* Subtle separator */
+        }
+        .dropdown-menu a:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        .dropdown-close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 768px) { /* md breakpoint in Tailwind */
+            .desktop-nav {
+                display: block; /* Show regular nav on larger screens */
+            }
+            .hamburger-menu {
+                display: none; /* Hide hamburger on larger screens */
+            }
+            .dropdown-menu {
+                display: none; /* Hide dropdown on larger screens */
+            }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Header Section -->
+    <header class="bg-darkred shadow-lg py-6 px-4 relative"> <!-- Added relative for absolute positioning of hamburger -->
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center text-center">
+            <!-- Hamburger Menu Icon (Mobile Only) -->
+            <div class="hamburger-menu md:hidden" id="hamburgerIcon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <!-- School Logo/Name -->
+            <div class="flex flex-col items-center mb-2 md:mb-0 w-full md:w-auto"> <!-- Full width on mobile for centering -->
+                <div class="flex items-center justify-center mb-1">
+                   <img src="badge.jpg" alt="Arch Angels Education Centre Badge" onerror="this.onerror=null;this.src='https://placehold.co/112x112/B22222/FFF?text=Badge'" class="h-28 w-28 mr-3 rounded-full shadow-md animate-bounce-in">
+                    <h1 class="text-white text-4xl font-bold animate-fade-in-up">
+                        Archangels Education Centre
+                    </h1>
+                </div>
+                <p class="text-white text-lg animate-fade-in-up delay-300">
+                    "Knowledge is Power"
+                </p>
+                <p class="text-white text-md animate-fade-in-up delay-400">
+                    Located in Kigoma, Kampala
+                </p>
+            </div>
+
+            <!-- Desktop Navigation Menu (Desktop Only) -->
+            <nav class="desktop-nav">
+                <ul class="flex flex-wrap justify-center space-x-4 md:space-x-6 text-lg">
+                    <li><a href="#home" class="text-white hover:text-blue-200 transition duration-300 px-3 py-2 rounded-md">Home</a></li>
+                    <li><a href="#about" class="text-white hover:text-blue-200 transition duration-300 px-3 py-2 rounded-md">About Us</a></li>
+                    <li><a href="#programs" class="text-white hover:text-blue-200 transition duration-300 px-3 py-2 rounded-md">Programs</a></li>
+                    <li><a href="#gallery" class="text-white hover:text-blue-200 transition duration-300 px-3 py-2 rounded-md">Gallery</a></li>
+                    <li><a href="#admissions" class="text-white hover:text-blue-200 transition duration-300 px-3 py-2 rounded-md">Admissions</a></li>
+                    <li><a href="#contact" class="text-white hover:text-blue-200 transition duration-300 px-3 py-2 rounded-md">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Dropdown Menu (Mobile Only) -->
+    <div class="dropdown-menu md:hidden" id="dropdownMenu">
+        <span class="dropdown-close-button" id="closeDropdown">&times;</span>
+        <a href="#home" class="hover:text-blue-200" onclick="hideDropdown()">Home</a>
+        <a href="#about" class="hover:text-blue-200" onclick="hideDropdown()">About Us</a>
+        <a href="#programs" class="hover:text-blue-200" onclick="hideDropdown()">Programs</a>
+        <a href="#gallery" class="hover:text-blue-200" onclick="hideDropdown()">Gallery</a>
+        <a href="#admissions" class="hover:text-blue-200" onclick="hideDropdown()">Admissions</a>
+        <a href="#contact" class="hover:text-blue-200" onclick="hideDropdown()">Contact</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20 md:py-32 overflow-hidden rounded-b-xl shadow-lg" style="perspective: 1000px;">
+        <!-- Background container for 3D motion -->
+        <div class="absolute inset-0 z-0">
+            <div class="hero-background-image"></div> <!-- This will hold the image and 3D animation -->
+        </div>
+        <div class="container mx-auto px-4 text-center z-10 relative">
+            <h2 class="text-4xl md:text-6xl font-extrabold leading-tight mb-6 animate-fade-in-up">
+                Nurturing Young Minds for a Bright Future
+            </h2>
+            <p class="text-xl md:text-2xl mb-10 opacity-90 animate-fade-in-up delay-200">
+                Welcome to Arch Angels Education Centre, where learning begins with joy and discovery.
+            </p>
+            <a href="#admissions" class="bg-darkred text-white hover:bg-red-700 font-bold py-3 px-8 rounded-full shadow-lg text-lg transition duration-300 ease-in-out transform hover:scale-105 inline-block animate-fade-in-up delay-400">
+                Enroll Your Child Today!
+            </a>
+        </div>
+        <!-- Background decorative elements for visual appeal -->
+        <div class="absolute top-0 left-0 w-full h-full z-0">
+            <div class="absolute top-1/4 left-1/4 w-32 h-32 bg-blue-400 opacity-20 rounded-full animate-pulse-slow"></div>
+            <div class="absolute bottom-1/3 right-1/3 w-48 h-48 bg-indigo-400 opacity-20 rounded-full animate-pulse-slow delay-500"></div>
+            <div class="absolute top-1/2 right-1/10 w-24 h-24 bg-red-400 opacity-20 rounded-full animate-pulse-slow delay-1000"></div>
+        </div>
+    </section>
+
+    <!-- About Us Section -->
+    <section id="about" class="py-16 md:py-24 bg-white rounded-xl mx-4 my-8 shadow-md">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12 text-darkblue animate-fade-in-up">Welcome to Our Nursery and Primary School</h2>
+            <div class="max-w-4xl mx-auto space-y-6 text-lg leading-relaxed text-gray-700 animate-fade-in-up delay-200">
+                <p>
+                    <strong>Arch Angels Education Centre</strong> is a nurturing learning environment dedicated to producing desirable citizens with acceptable behaviors. Our school is fully equipped with passionate and qualified teachers who are committed to the holistic development of each child.
+                </p>
+                <p>
+                    With a mission to instill knowledge, skills, and values for self-sustainability, we ensure that our pupils are not only academically prepared but also socially responsible. We offer affordable school fees to make quality education accessible to every child.
+                </p>
+                <p>
+                    We currently offer enrollment from Baby Class up to Primary Two (P.2), and learning takes place from <strong>Monday to Friday, 8:00 am to 4:00 pm</strong>.
+                </p>
+                <p className="font-semibold text-darkred">MISSION:</p>
+                <p>To produce desirable citizens with acceptable behaviours in the community, equipped with knowledge, skills, and values for self-sustainability.</p>
+                <p className="font-semibold text-darkblue">VISION:</p>
+                <p>To holistically educate the children for sustainable development.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Programs Section -->
+    <section id="programs" class="py-16 md:py-24 bg-red-50 rounded-xl mx-4 my-8 shadow-md">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12 text-darkred animate-fade-in-up">Our Programs</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Program Card 1 -->
+                <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1 animate-fade-in-up delay-100">
+                    <h3 class="text-2xl font-semibold mb-4 text-blue-600">Early Childhood Development</h3>
+                    <p class="text-gray-700 mb-4">
+                        Our foundation program focuses on holistic development, including fine motor skills, language acquisition, and early numeracy through engaging activities.
+                    </p>
+                    <ul class="list-disc list-inside text-gray-600">
+                        <li>Play-based learning</li>
+                        <li>Social interaction</li>
+                        <li>Sensory exploration</li>
+                    </ul>
+                </div>
+                <!-- Program Card 2 -->
+                <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1 animate-fade-in-up delay-200">
+                    <h3 class="text-2xl font-semibold mb-4 text-blue-600">Creative Arts & Expression</h3>
+                    <p class="text-gray-700 mb-4">
+                        Encouraging creativity through various art forms, music, dance, and dramatic play. Children express themselves freely.
+                    </p>
+                    <ul class="list-disc list-inside text-gray-600">
+                        <li>Painting & drawing</li>
+                        <li>Singing & rhythm</li>
+                        <li>Storytelling</li>
+                    </ul>
+                </div>
+                <!-- Program Card 3 -->
+                <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1 animate-fade-in-up delay-300">
+                    <h3 class="text-2xl font-semibold mb-4 text-blue-600">Outdoor & Physical Activities</h3>
+                    <p class="text-gray-700 mb-4">
+                        Promoting physical health and coordination through outdoor play, games, and structured physical activities.
+                    </p>
+                    <ul class="list-disc list-inside text-gray-600">
+                        <li>Outdoor playground</li>
+                        <li>Group games</li>
+                        <li>Nature exploration</li>
+                        <li>Merry-go-round activities</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="py-16 md:py-24 bg-white rounded-xl mx-4 my-8 shadow-md">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12 text-blue-700 animate-fade-in-up">Our Photo Gallery</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Updated image paths for images inside 'images/' folder -->
+                <img src="kidplay.jpg" alt="Children playing on a merry-go-round at the school playground" onerror="this.onerror=null;this.src='https://placehold.co/400x300/F0F8FF/333?text=Playground'" class="rounded-lg shadow-md w-full h-48 object-cover transition-transform duration-300 hover:scale-105 animate-fade-in-up delay-100">
+                <img src="group.jpg" alt="Group of kids doing art" onerror="this.onerror=null;this.src='https://placehold.co/400x300/E6E6FA/333?text=Art+Class'" class="rounded-lg shadow-md w-full h-48 object-cover transition-transform duration-300 hover:scale-105 animate-fade-in-up delay-200">
+                <img src="group2.jpg" alt="Teacher reading to a group of kids" onerror="this.onerror=null;this.src='https://placehold.co/400x300/F5F5DC/333?text=Story+Time'" class="rounded-lg shadow-md w-full h-48 object-cover transition-transform duration-300 hover:scale-105 animate-fade-in-up delay-300">
+                <img src="group4.jpg" alt="Kids playing outside" onerror="this.onerror=null;this.src='https://placehold.co/400x300/FFF0F5/333?text=Outdoor+Games'" class="rounded-lg shadow-md w-full h-48 object-cover transition-transform duration-300 hover:scale-105 animate-fade-in-up delay-400">
+                <img src="work.jpg" alt="Kids engaging in school work" onerror="this.onerror=null;this.src='https://placehold.co/400x300/FFFAF0/333?text=Music+Session'" class="rounded-lg shadow-md w-full h-48 object-cover transition-transform duration-300 hover:scale-105 animate-fade-in-up delay-500">
+                <img src="instant.jpg" alt="Kids doing group activity" onerror="this.onerror=null;this.src='https://placehold.co/400x300/F0FFFF/333?text=Learning+Together'" class="rounded-lg shadow-md w-full h-48 object-cover transition-transform duration-300 hover:scale-105 animate-fade-in-up delay-600">
+                <img src="intant 2.jpg" alt="Kids learning" class="rounded-lg shadow-md w-full h-48 object-cover transition-transform duration-300 hover:scale-105 animate-fade-in-up delay-700">
+                <img src="compound.jpg" alt="Kids engaging in creative play" onerror="this.onerror=null;this.src='https://placehold.co/400x300/F8F8FF/333?text=Creative+Play'" class="rounded-lg shadow-md w-full h-48 object-cover transition-transform duration-300 hover:scale-105 animate-fade-in-up delay-800">
+            </div>
+            <p class="text-center text-gray-600 mt-8 text-sm">
+                
+            </p>
+        </div>
+    </section>
+
+    <!-- Admissions Section - Interactive Form -->
+    <section id="admissions" class="py-16 md:py-24 bg-blue-50 rounded-xl mx-4 my-8 shadow-md">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12 text-darkblue animate-fade-in-up">Enroll Now</h2>
+            <div class="max-w-xl mx-auto p-8 md:p-12 rounded-xl shadow-lg bg-gradient-to-br from-white to-blue-50 animate-fade-in-up delay-200">
+                <p class="text-lg text-gray-700 mb-8 text-center">
+                    Interested in enrolling your child at Arch Angels Education Centre? Please fill out the form below, and our team will get back to you shortly.
+                </p>
+                <form id="inquiryForm" class="space-y-6">
+                    <div>
+                        <label for="parentName" class="block text-gray-700 text-sm font-semibold mb-2">Your Name <span class="text-red-500">*</span></label>
+                        <input type="text" id="parentName" name="name" placeholder="Your Name" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                    </div>
+                    <div>
+                        <label for="email" class="block text-gray-700 text-sm font-semibold mb-2">Your Email <span class="text-red-500">*</span></label>
+                        <input type="email" id="email" name="email" placeholder="Your Email" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                    </div>
+                    <div>
+                        <label for="message" class="block text-gray-700 text-sm font-semibold mb-2">Your Message/Questions <span class="text-red-500">*</span></label>
+                        <textarea id="message" name="message" placeholder="Your Message" rows="5" required
+                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 resize-y"></textarea>
+                    </div>
+                    <div id="validationMessage" class="text-red-500 text-sm text-center mt-4 hidden"></div>
+                    <div class="text-center">
+                        <button type="submit"
+                                class="bg-darkblue text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-blue-800 transition duration-300 ease-in-out transform hover:scale-105">
+                            Send Enrollment
+                        </button>
+                    </div>
+                </form>
+                <p class="text-center text-gray-600 mt-8 text-sm">
+                    
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Us Section -->
+    <section id="contact" class="py-16 md:py-24 bg-white rounded-xl mx-4 my-8 shadow-md">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12 text-blue-700 animate-fade-in-up">Contact Us</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <!-- Contact Details -->
+                <div class="space-y-6 text-lg text-gray-700">
+                    <p class="flex items-center">
+                        <svg class="w-6 h-6 mr-3 text-darkred" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <strong>Location:</strong> Kigoma, Kampala, Uganda
+                    </p>
+                    <p class="flex items-center">
+                        <svg class="w-6 h-6 mr-3 text-darkred" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.774a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+                        </svg>
+                        <strong>Phone:</strong> <a href="tel:+256774630514" class="hover:text-darkred transition duration-200"> +256 774 630 514</a> | <a href="tel:+256756016655" class="hover:text-darkred transition duration-200">+256 756 016 655</a>
+                    </p>
+                    <p class="flex items-center">
+                        <svg class="w-6 h-6 mr-3 text-darkred" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                        </svg>
+                        <strong>Email:</strong> <a href="mailto:Archangelskigoma@gmail.com" class="hover:text-darkred transition duration-200">Archangelskigoma@gmail.com</a>
+                    </p>
+                    <p class="text-gray-600 text-base">
+                        Feel free to reach out to us for any inquiries, admissions information, or to schedule a visit to our center.
+                    </p>
+                </div>
+                <!-- Embedded Map -->
+                <div class="md:w-1/2 w-full h-80 md:h-96 rounded-xl shadow-lg overflow-hidden animate-fade-in-up delay-200">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15959.088190760432!2d32.559388149999995!3d0.32049105!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x177dbb1c67425f3b%3A0xc3f563603d6d5a1b!2sKigoma%2C%20Kampala!5e0!3m2!1sen!2sug!4v1700000000000!5m2!1sen!2sug"
+                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="bg-darkred text-white text-center py-4 mt-12">
+        <p>Contact us: +256 774 630 514 | +256 756 016 655</p>
+        <p>Email: Archangelskigoma@gmail.com</p>
+        <p>&copy; <span id="currentYear"></span> Arch Angels Education Centre. All rights reserved.</p>
+    </footer>
+
+    <!-- Simple Modal for Form Submission Acknowledgment -->
+    <div id="myModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3 class="text-2xl font-bold text-darkblue mb-4">Thank You!</h3>
+            <p class="text-gray-700 text-lg">Your inquiry has been submitted successfully.</p>
+            <p class="text-gray-600 text-base mt-2">We will get back to you shortly.</p>
+        </div>
+    </div>
+
+    <!-- JavaScript for dynamic year and form handling -->
+    <script>
+        // Set current year dynamically in the footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Get the modal, the button that opens it, and the <span> element that closes it
+        const modal = document.getElementById('myModal');
+        const closeButton = document.querySelector('.close-button');
+        const inquiryForm = document.getElementById('inquiryForm');
+        const validationMessageDiv = document.getElementById('validationMessage');
+
+        // Get dropdown elements
+        const hamburgerIcon = document.getElementById('hamburgerIcon');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        const closeDropdownButton = document.getElementById('closeDropdown');
+
+        // Function to show the modal
+        function showModal() {
+            modal.classList.remove('hidden');
+        }
+
+        // Function to hide the modal
+        function hideModal() {
+            modal.classList.add('hidden');
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        closeButton.addEventListener('click', hideModal);
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                hideModal();
+            }
+        });
+
+        // Function to display validation messages
+        function displayValidationMessage(message, isError = true) {
+            validationMessageDiv.textContent = message;
+            if (isError) {
+                validationMessageDiv.classList.remove('text-green-600');
+                validationMessageDiv.classList.add('text-red-500');
+            } else {
+                validationMessageDiv.classList.remove('text-red-500');
+                validationMessageDiv.classList.add('text-green-600');
+            }
+            validationMessageDiv.classList.remove('hidden');
+        }
+
+        // Function to clear validation messages
+        function clearValidationMessage() {
+            validationMessageDiv.textContent = '';
+            validationMessageDiv.classList.add('hidden');
+        }
+
+        // Handle form submission
+        inquiryForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+            clearValidationMessage(); // Clear previous messages
+
+            // Basic client-side validation
+            const parentName = document.getElementById('parentName').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+
+            if (parentName.trim() === '' || email.trim() === '' || message.trim() === '') {
+                displayValidationMessage('Please fill in all required fields (Your Name, Your Email, Your Message).');
+                return;
+            }
+
+            // Construct mailto link
+            const mailtoLink = `mailto:Archangelskigoma@gmail.com?subject=Enrollment Inquiry from ${encodeURIComponent(parentName)}&body=Email: ${encodeURIComponent(email)}%0A%0A${encodeURIComponent(message)}`;
+            window.location.href = mailtoLink;
+
+            // Show the modal
+            showModal();
+
+            // Clear the form fields after submission
+            inquiryForm.reset();
+        });
+
+        // Toggle dropdown menu
+        hamburgerIcon.addEventListener('click', () => {
+            dropdownMenu.classList.toggle('active');
+        });
+
+        closeDropdownButton.addEventListener('click', () => {
+            dropdownMenu.classList.remove('active');
+        });
+
+        // Function to hide dropdown after clicking a link
+        function hideDropdown() {
+            dropdownMenu.classList.remove('active');
+        }
+
+    </script>
+</body>
+</html>
